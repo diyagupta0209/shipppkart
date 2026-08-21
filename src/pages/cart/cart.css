@@ -1,42 +1,95 @@
 .cart {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.cart h1,
+.cart h2 {
+  text-align: center;
 }
 
 .cartItem {
-    width: 700px;
-    height: 250px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.2);
-    border-radius: 25px;
-    margin: 30px;
+  width: 100%;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  border-radius: 20px;
+  margin: 0 0 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
 }
 
 .cartItem img {
-    width: 200px;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  background: #f8fafc;
+  border-radius: 16px;
 }
 
 .cartItem .description {
-    width: 100%;
-    font-size: 30px;
+  width: 100%;
+  font-size: 18px;
+}
+
+.countHandler {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.countHandler button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  cursor: pointer;
 }
 
 .countHandler input {
-    width: 40px;
-    text-align: center;
-    font-weight: bolder;
+  width: 52px;
+  height: 36px;
+  text-align: center;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  border-radius: 10px;
 }
 
-.checkout button {
-    width: 150px;
-    height: 50px;
-    background-color: rgb(19,19,19);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    margin: 10px;
-    cursor: pointer;
+.checkout,
+.empty-card {
+  margin-top: 12px;
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.checkout button,
+.empty-card button {
+  min-width: 160px;
+  height: 46px;
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.checkout button.primary {
+  background: var(--brand);
+  color: white;
+  border: none;
 }

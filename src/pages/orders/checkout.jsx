@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShopContext } from "../../Context/shop-context";
+import { formatPrice } from "../../utils/productImage";
 import "../auth/auth.css";
 
 const INITIAL_ADDRESS = {
@@ -10,6 +11,15 @@ const INITIAL_ADDRESS = {
   state: "",
   postalCode: "",
   country: "",
+};
+
+const LABELS = {
+  fullName: "Full name",
+  street: "Street address",
+  city: "City",
+  state: "State",
+  postalCode: "Postal code",
+  country: "Country",
 };
 
 export const Checkout = () => {
@@ -54,10 +64,10 @@ export const Checkout = () => {
     <div className="checkout-page">
       <form className="checkout-card" onSubmit={handleSubmit}>
         <h1>Checkout</h1>
-        <p>Order total: ${getTotalCartAmount()}</p>
+        <p className="order-total">Order total: {formatPrice(getTotalCartAmount())}</p>
         {Object.keys(INITIAL_ADDRESS).map((field) => (
           <label key={field}>
-            {field.replace(/([A-Z])/g, " $1")}
+            {LABELS[field]}
             <input name={field} value={address[field]} onChange={handleChange} required />
           </label>
         ))}

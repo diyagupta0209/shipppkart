@@ -3,19 +3,27 @@
 .orders-page {
   display: flex;
   justify-content: center;
-  padding: 120px 20px 40px;
+  padding: 36px 20px 64px;
 }
 
 .auth-card,
 .checkout-card {
   width: 100%;
   max-width: 480px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
-  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  border-radius: 20px;
   padding: 32px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border: 1px solid var(--line);
+}
+
+.auth-card h1,
+.checkout-card h1,
+.orders-list h1 {
+  margin-top: 0;
 }
 
 .auth-card label,
@@ -28,33 +36,39 @@
 
 .auth-card input,
 .checkout-card input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
   font-size: 16px;
 }
 
 .auth-card button,
 .checkout-card button,
-.orders-page button,
-.cart button {
-  background-color: rgb(19, 19, 19);
+.orders-page button {
+  background: var(--brand);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 12px;
   cursor: pointer;
+  font-weight: 700;
 }
 
 .form-error,
 .product-error,
 .status-copy.error {
-  color: #b91c1c;
+  color: var(--danger);
 }
 
 .hint,
-.status-copy {
-  color: #525252;
+.status-copy,
+.order-total {
+  color: var(--muted);
+}
+
+.auth-card a {
+  color: var(--brand);
+  font-weight: 700;
 }
 
 .orders-list {
@@ -65,9 +79,11 @@
 }
 
 .order-card {
-  border-radius: 16px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.12);
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
   padding: 20px;
+  border: 1px solid var(--line);
 }
 
 .order-header {
@@ -80,4 +96,25 @@
 .order-items {
   margin: 12px 0 0;
   padding-left: 18px;
+}
+
+.status-pill {
+  display: inline-block;
+  text-transform: capitalize;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-pill.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-pill.confirmed {
+  background: #d1fae5;
+  color: #047857;
 }

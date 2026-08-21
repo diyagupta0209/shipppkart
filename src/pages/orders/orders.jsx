@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../api";
 import { useAuth } from "../../Context/auth-context";
+import { formatPrice } from "../../utils/productImage";
 import "../auth/auth.css";
 
 export const Orders = () => {
@@ -36,11 +37,9 @@ export const Orders = () => {
           <div className="order-card" key={order._id}>
             <div className="order-header">
               <div>
+                <p className={`status-pill ${order.status}`}>{order.status}</p>
                 <p>
-                  <b>Status:</b> {order.status}
-                </p>
-                <p>
-                  <b>Total:</b> ${order.subtotal}
+                  <b>Total:</b> {formatPrice(order.subtotal)}
                 </p>
                 <p>
                   <b>Placed:</b> {new Date(order.createdAt).toLocaleString()}
@@ -55,7 +54,7 @@ export const Orders = () => {
             <ul className="order-items">
               {order.items.map((item) => (
                 <li key={`${order._id}-${item.product}`}>
-                  {item.name} x {item.quantity} — ${item.price * item.quantity}
+                  {item.name} x {item.quantity} — {formatPrice(item.price * item.quantity)}
                 </li>
               ))}
             </ul>
