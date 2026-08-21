@@ -123,7 +123,15 @@ Merge the pull request into `main` if you want production to track `main`.
 
 5. Click **Deploy**. When it is live, open the Render URL. You should see ShipKart and `/api/health` should return JSON.
 
-If images or login fail after deploy, confirm `MONGO_URI` is correct and the Atlas user password has no unescaped special characters (`@`, `#`, `%` must be URL-encoded).
+If Render fails with `Invalid scheme`, the **Value** for `MONGO_URI` is wrong. Edit the env var and paste **only** the URI:
+
+- Key: `MONGO_URI`
+- Value must start with `mongodb+srv://`
+- No quotes around it
+- Do not paste `MONGO_URI=` in the value
+- Encode `#` in the password as `%23`
+
+Then click **Save Changes** / **Manual Deploy → Deploy latest commit**.
 
 ### Local production check
 

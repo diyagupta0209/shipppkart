@@ -6,6 +6,7 @@ process.env.JWT_SECRET = "test-secret";
 process.env.JWT_EXPIRES_IN = "1h";
 process.env.NODE_ENV = "test";
 
+const { sanitizeMongoUri } = require("../src/config/db");
 const app = require("../src/app");
 const User = require("../src/models/User");
 const Product = require("../src/models/Product");
@@ -64,6 +65,17 @@ const createProduct = (overrides = {}) =>
     stock: 10,
     ...overrides,
   });
+
+describe("Mongo URI sanitizing", () => {
+  test("strips quotes and a MONGO_URI= prefix", () => {
+    expect(
+      sanitizeMongoUri('"mongodb+srv://user:pass@cluster.mongodb.net/shipkart"')
+    ).toBe("mongodb+srv://user:pass@cluster.mongodb.net/shipkart");
+    expect(
+      sanitizeMongoUri("MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/shipkart")
+    ).toBe("mongodb+srv://user:pass@cluster.mongodb.net/shipkart");
+  });
+});
 
 describe("Auth", () => {
   test("registers a user and returns a JWT", async () => {
