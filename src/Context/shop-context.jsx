@@ -1,49 +1,124 @@
-import React, { createContext } from "react";
-import { useState } from 'react';
-//import { PRODUCTS } from "../../products";
-import { PRODUCTS } from "../products";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { api } from "../api";
+import { useAuth } from "./auth-context";
 
 export const ShopContext = createContext(null);
 
-const getDefaultCart = () => {
-    let cart = {}
-        for(let i=1; i<PRODUCTS.length + 1; i++)
-        {
-            cart[i] = 0
+const emptyCart = { items: [], subtotal: 0, itemCount: 0 };
+
+export const ShopContextProvider = ({ children }) => {
+  const { token, isAuthenticated } = useAuth();
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState(emptyCart);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadProducts = useCallback(async () => {
+    const payload = await api("/api/products");
+    setProducts(payload.data.products);
+  }, []);
+
+  const loadCart = useCallback(async () => {
+    if (!token) {
+      setCart(emptyCart);
+      return;
+    }
+    const payload = await api("/api/cart", { token });
+    setCart(payload.data.cart);
+  }, [token]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const bootstrap = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        await loadProducts();
+        if (!cancelled && token) {
+          await loadCart();
         }
-        return cart;
-}
-export const ShopContextProvider = (props) => {
-    const [cartItems, setCartItems] = useState(getDefaultCart());
-
-    const getTotalCartAmount = () => {
-        let totalAmount=0;
-        for (const item in cartItems) {
-            if (cartItems[item] > 0)
-            {
-                let itemInfo=PRODUCTS.find((product) => product.id === Number(item));
-                totalAmount += cartItems[item] * itemInfo.price;
-            }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message);
         }
-        return totalAmount;
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     };
-
-    const addToCart = (itemId) => {
-        setCartItems((prev) => ({...prev, [itemId]: prev[itemId] + 1}))
+    bootstrap();
+    return () => {
+      cancelled = true;
     };
-    
-    const removeFromCart = (itemId) => {
-        setCartItems((prev) => ({...prev, [itemId]: prev[itemId] - 1}))
-    };
+  }, [loadProducts, loadCart, token]);
 
-    const updateCartItemCount = (newAmount, itemId) => {
-        setCartItems((prev) => ({ ...prev, [itemId]: newAmount}))
-    };
+  const quantityFor = (productId) => {
+    const match = cart.items.find((item) => item.product.id === productId);
+    return match ? match.quantity : 0;
+  };
 
-    const contextValue = { cartItems, addToCart, removeFromCart, updateCartItemCount, getTotalCartAmount };
+  const addToCart = async (productId, quantity = 1) => {
+    const payload = await api("/api/cart/items", {
+      method: "POST",
+      token,
+      body: { productId, quantity },
+    });
+    setCart(payload.data.cart);
+  };
 
-    console.log(cartItems);
-    return <ShopContext.Provider value={contextValue}>
-        {props.children}
-    </ShopContext.Provider>
-}
+  const removeFromCart = async (productId) => {
+    const current = quantityFor(productId);
+    if (current <= 1) {
+      const payload = await api(`/api/cart/items/${productId}`, { method: "DELETE", token });
+      setCart(payload.data.cart);
+      return;
+    }
+    const payload = await api(`/api/cart/items/${productId}`, {
+      method: "PATCH",
+      token,
+      body: { quantity: current - 1 },
+    });
+    setCart(payload.data.cart);
+  };
+
+  const updateCartItemCount = async (quantity, productId) => {
+    const payload = await api(`/api/cart/items/${productId}`, {
+      method: "PATCH",
+      token,
+      body: { quantity },
+    });
+    setCart(payload.data.cart);
+  };
+
+  const checkout = async (shippingAddress) => {
+    const payload = await api("/api/orders", {
+      method: "POST",
+      token,
+      body: { shippingAddress },
+    });
+    setCart(emptyCart);
+    await loadProducts();
+    return payload.data.order;
+  };
+
+  const value = useMemo(
+    () => ({
+      products,
+      cart,
+      loading,
+      error,
+      isAuthenticated,
+      addToCart,
+      removeFromCart,
+      updateCartItemCount,
+      quantityFor,
+      getTotalCartAmount: () => cart.subtotal,
+      checkout,
+      refresh: loadProducts,
+    }),
+    [products, cart, loading, error, isAuthenticated, token]
+  );
+
+  return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
+};

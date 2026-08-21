@@ -1,0 +1,83 @@
+.auth-page,
+.checkout-page,
+.orders-page {
+  display: flex;
+  justify-content: center;
+  padding: 120px 20px 40px;
+}
+
+.auth-card,
+.checkout-card {
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-card label,
+.checkout-card label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  gap: 6px;
+}
+
+.auth-card input,
+.checkout-card input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.auth-card button,
+.checkout-card button,
+.orders-page button,
+.cart button {
+  background-color: rgb(19, 19, 19);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.form-error,
+.product-error,
+.status-copy.error {
+  color: #b91c1c;
+}
+
+.hint,
+.status-copy {
+  color: #525252;
+}
+
+.orders-list {
+  width: min(900px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card {
+  border-radius: 16px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.12);
+  padding: 20px;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-items {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}

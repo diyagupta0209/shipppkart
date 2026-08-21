@@ -17,10 +17,14 @@
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.22"
   },
+  "proxy": "http://localhost:5000",
   "scripts": {
     "start": "react-scripts start",
+    "server": "npm start --prefix server",
+    "dev": "concurrently \"npm run server\" \"npm start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:server": "npm test --prefix server",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
@@ -44,6 +48,7 @@
     ]
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "gh-pages": "^6.3.0"
   }
 }

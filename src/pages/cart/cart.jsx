@@ -1,37 +1,44 @@
-import React, { useContext } from 'react'
-import { PRODUCTS } from '../../products';
-import { ShopContext } from '../../Context/shop-context';
-import { CartItem } from './cart-item';
+import React, { useContext } from "react";
+import { ShopContext } from "../../Context/shop-context";
+import { CartItem } from "./cart-item";
 import "./cart.css";
-
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/auth-context";
 
 export const Cart = () => {
-    const { cartItems, getTotalCartAmount } = useContext(ShopContext);
-    const totalAmount = getTotalCartAmount()
+    const { cart, getTotalCartAmount } = useContext(ShopContext);
+    const { isAuthenticated } = useAuth();
+    const totalAmount = getTotalCartAmount();
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
+    if (!isAuthenticated) {
+        return (
+            <div className="cart">
+                <h1>Sign in to manage your cart</h1>
+                <button onClick={() => navigate("/login")}>Login</button>
+            </div>
+        );
+    }
+
     return (
      <div className="cart">
         <div>
-            <h1> Your Cart Items</h1>
+            <h1>Your Cart Items</h1>
         </div>
         <div className="cartItems">
-            {PRODUCTS.map((product) => {
-                if (cartItems[product.id] !==0){
-                    return <CartItem data = {product} />
-                }
-            })}
+            {cart.items.map((item) => (
+                <CartItem key={item.product.id} data={item} />
+            ))}
         </div>
         {totalAmount > 0 ? (
-        <div className = "checkout">
-            <p> Subtotal: ${totalAmount}</p>
-            <button onClick={() => navigate("/")} > Continue Shopping </button>
-            <button> Checkout </button>
+        <div className="checkout">
+            <p>Subtotal: ${totalAmount}</p>
+            <button onClick={() => navigate("/")}>Continue Shopping</button>
+            <button onClick={() => navigate("/checkout")}>Checkout</button>
         </div>
     ) : (
-        <h1> Your Cart is Empty </h1>
+        <h1>Your Cart is Empty</h1>
     )}
       </div>
-    )
+    );
 };

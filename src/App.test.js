@@ -1,8 +1,22 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
+beforeEach(() => {
+  global.fetch = jest.fn((url) => {
+    if (String(url).includes("/api/products")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ status: "success", data: { products: [] } }),
+      });
+    }
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ status: "success", data: {} }),
+    });
+  });
+});
+
+test("renders shop brand", async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(await screen.findAllByText(/SHIPKART/i)).not.toHaveLength(0);
 });
