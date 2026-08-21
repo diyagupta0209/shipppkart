@@ -20,6 +20,7 @@
   "proxy": "http://localhost:5000",
   "scripts": {
     "start": "react-scripts start",
+    "start:prod": "node server/src/index.js",
     "server": "npm start --prefix server",
     "dev": "concurrently \"npm run server\" \"npm start\"",
     "build": "react-scripts build",
@@ -28,6 +29,9 @@
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "eslintConfig": {
     "extends": [

@@ -6,6 +6,9 @@ const connectDb = async () => {
   let uri = process.env.MONGO_URI;
 
   if (!uri) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("MONGO_URI is required in production");
+    }
     const { MongoMemoryServer } = require("mongodb-memory-server");
     memoryServer = await MongoMemoryServer.create();
     uri = memoryServer.getUri();

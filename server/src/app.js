@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -9,11 +11,18 @@ const orderRoutes = require("./routes/orders");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 
 const app = express();
+const clientBuild = path.join(__dirname, "../../build");
 
-app.use(helmet());
+app.set("trust proxy", 1);
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+    origin: process.env.CLIENT_ORIGIN || true,
     credentials: true,
   })
 );
@@ -38,6 +47,16 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+
+if (fs.existsSync(clientBuild)) {
+  app.use(express.static(clientBuild));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(clientBuild, "index.html"));
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
