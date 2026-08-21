@@ -1,4 +1,17 @@
 import { render, screen } from "@testing-library/react";
+
+jest.mock("react-router-dom", () => {
+  const React = require("react");
+  return {
+    BrowserRouter: ({ children }) => React.createElement("div", null, children),
+    Routes: ({ children }) => React.createElement("div", null, children),
+    Route: ({ element }) => element || null,
+    Link: ({ children }) => React.createElement("a", { href: "#" }, children),
+    Navigate: () => null,
+    useNavigate: () => jest.fn(),
+  };
+}, { virtual: true });
+
 import App from "./App";
 
 beforeEach(() => {
