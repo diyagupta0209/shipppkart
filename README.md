@@ -123,15 +123,16 @@ Merge the pull request into `main` if you want production to track `main`.
 
 5. Click **Deploy**. When it is live, open the Render URL. You should see ShipKart and `/api/health` should return JSON.
 
-If Render fails with `Invalid scheme`, the **Value** for `MONGO_URI` is wrong. Edit the env var and paste **only** the URI:
+If Render fails with `IP that isn't whitelisted` or `ReplicaSetNoPrimary`:
 
-- Key: `MONGO_URI`
-- Value must start with `mongodb+srv://`
-- No quotes around it
-- Do not paste `MONGO_URI=` in the value
-- Encode `#` in the password as `%23`
+1. Atlas → **Network Access**
+2. **Add IP Address**
+3. **Allow Access from Anywhere** (`0.0.0.0/0`)
+4. Confirm and wait until the entry status is **Active** (about a minute)
+5. Confirm the cluster is not **Paused**
+6. Render → **Manual Deploy**
 
-Then click **Save Changes** / **Manual Deploy → Deploy latest commit**.
+Render’s servers are not your home IP, so allowing only “my current IP” will still fail.
 
 ### Local production check
 

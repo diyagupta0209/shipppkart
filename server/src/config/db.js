@@ -41,7 +41,9 @@ const connectDb = async () => {
   }
 
   mongoose.set("strictQuery", true);
-  await mongoose.connect(uri);
+  console.log("Connecting to MongoDB Atlas...");
+  await mongoose.connect(uri, { serverSelectionTimeoutMS: 20000 });
+  console.log("MongoDB connected");
 };
 
 const disconnectDb = async () => {
