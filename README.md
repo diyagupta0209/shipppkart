@@ -1,70 +1,146 @@
-# Getting Started with Create React App
+# ShipKart
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Full-stack shopping platform for product browsing, cart management, and order workflows.
 
-## Available Scripts
+## Stack
 
-In the project directory, you can run:
+React, JavaScript, HTML, CSS, Node.js, Express.js, MongoDB, REST APIs, JWT
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Public product catalog with inventory-aware stock counts
+- JWT registration/login and protected cart/order routes
+- Cart CRUD with inventory checks
+- Checkout that creates an order, decrements stock, and clears the cart
+- Order history plus cancellation that restores inventory
+- Request validation and structured API error responses
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project layout
 
-### `npm test`
+- `src/` React storefront
+- `server/` Express REST API and MongoDB models
+- `public/products/` catalog images
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Setup
 
-### `npm run build`
+```bash
+npm install
+npm install --prefix server
+cp server/.env.example server/.env
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Set `MONGO_URI` in `server/.env` to a MongoDB instance. If you omit it, the API starts an in-memory MongoDB database for local demos.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Run
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm run dev
+```
 
-### `npm run eject`
+- Storefront: http://localhost:3000
+- API: http://localhost:5000/api/health
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Seeded admin (when the catalog is empty):
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Email: `admin@shipkart.dev`
+- Password: `AdminPass123!`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## API
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | No | Create an account |
+| POST | `/api/auth/login` | No | Sign in and receive a JWT |
+| GET | `/api/auth/me` | Yes | Current user |
+| GET | `/api/products` | No | List products |
+| POST | `/api/products` | Admin | Create product |
+| GET | `/api/cart` | Yes | Get cart |
+| POST | `/api/cart/items` | Yes | Add item |
+| PATCH | `/api/cart/items/:productId` | Yes | Update quantity |
+| DELETE | `/api/cart/items/:productId` | Yes | Remove item |
+| POST | `/api/orders` | Yes | Place order |
+| GET | `/api/orders` | Yes | List orders |
+| PATCH | `/api/orders/:id/cancel` | Yes | Cancel order |
 
-## Learn More
+## Tests
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run test:server
+CI=true npm test
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Deploy (Render + MongoDB Atlas)
 
-### Code Splitting
+GitHub Pages can host only the React files. This app also needs Node/Express and MongoDB, so use one web service that serves the API and the built storefront together.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 1. Create a free MongoDB Atlas database
 
-### Analyzing the Bundle Size
+1. Sign up at [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas).
+2. Create a **free M0** cluster.
+3. Under **Database Access**, add a user with a password you will remember.
+4. Under **Network Access**, add IP `0.0.0.0/0` so Render can connect.
+5. Click **Connect → Drivers** and copy the URI. It looks like:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/shipkart?retryWrites=true&w=majority
+```
 
-### Making a Progressive Web App
+Replace `USER` and `PASSWORD`. Keep the database name `shipkart`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 2. Push this branch to GitHub
 
-### Advanced Configuration
+```bash
+git checkout cursor/fullstack-shopping-platform-c8f7
+git pull
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Merge the pull request into `main` if you want production to track `main`.
 
-### Deployment
+### 3. Create a Render web service
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. Sign up at [https://render.com](https://render.com) with GitHub.
+2. **New + → Web Service →** select `diyagupta0209/shipppkart`.
+3. Use these settings:
 
-### `npm run build` fails to minify
+| Setting | Value |
+| --- | --- |
+| Branch | `main` (or `cursor/fullstack-shopping-platform-c8f7`) |
+| Runtime | Node |
+| Build command | `npm install && npm install --prefix server && npm run build` |
+| Start command | `npm run start:prod` |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4. Add environment variables:
+
+| Key | Value |
+| --- | --- |
+| `NODE_ENV` | `production` |
+| `MONGO_URI` | Atlas connection string from step 1 |
+| `JWT_SECRET` | a long random string |
+| `JWT_EXPIRES_IN` | `7d` |
+| `SEED_ON_START` | `true` |
+| `ADMIN_EMAIL` | `admin@shipkart.dev` |
+| `ADMIN_PASSWORD` | a strong password you choose |
+
+5. Click **Deploy**. When it is live, open the Render URL. You should see ShipKart and `/api/health` should return JSON.
+
+If Render fails with `IP that isn't whitelisted` or `ReplicaSetNoPrimary`:
+
+1. Atlas → **Network Access**
+2. **Add IP Address**
+3. **Allow Access from Anywhere** (`0.0.0.0/0`)
+4. Confirm and wait until the entry status is **Active** (about a minute)
+5. Confirm the cluster is not **Paused**
+6. Render → **Manual Deploy**
+
+Render’s servers are not your home IP, so allowing only “my current IP” will still fail.
+
+### Local production check
+
+```bash
+npm install
+npm install --prefix server
+npm run build
+MONGO_URI="your-atlas-uri" JWT_SECRET="test-secret" NODE_ENV=production npm run start:prod
+```
+
+Then open http://localhost:5000.

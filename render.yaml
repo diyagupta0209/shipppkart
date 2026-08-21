@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: shipkart
+    runtime: node
+    buildCommand: npm install && npm install --prefix server && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: SEED_ON_START
+        value: "true"
+      - key: ADMIN_EMAIL
+        value: admin@shipkart.dev
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
